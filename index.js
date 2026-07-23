@@ -32,6 +32,9 @@ app.use("/api/Dept",dept)
 app.use("/api/State", states)
 app.use("/api/City" ,city)
 app.use("/api/Emp", emp)
+app.get("/",(req,res)=>{
+  res.json("hello backend")
+})
 app.use(errorHandler)
 app.use(rateLimiter)
 await Mongodb(); 
