@@ -1,5 +1,4 @@
-import express, { Router } from "express"
-import db from  "./src/config/db.js"
+import express from "express"
 import cors from "cors"
 import dotenv from "dotenv"
 import Mongodb from "./src/config/db.js"
@@ -11,34 +10,37 @@ import emp from "./src/routes/employee.routes.js"
 import { errorHandler } from "./src/middleware/error.middleware.js"
 import rateLimit from "express-rate-limit"
 
- dotenv.config()
-const app=express();
-Mongodb()
+dotenv.config()
+const app = express();
 const PORT = process.env.PORT || 5000;
+
 const rateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes window
-  limit: 100, // Limit each IP to 100 requests per window
+  windowMs: 15 * 60 * 1000,
+  limit: 100,
   message: 'Too many requests from this IP, please try again later.',
-  standardHeaders: 'draft-7', // Return standard rate limit info headers
-  legacyHeaders: false, // Disable the X-Rate-Limit headers
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
 });
 
-app.use(cors())
+app.use(cors({
+  origin: process.env.FRONTEND_URL || '*',
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static("src/uploads"));
-app.use("/api/auth" , router)
-app.use("/api/Dept",dept)
+app.use("/api/auth", router)
+app.use("/api/Dept", dept)
 app.use("/api/State", states)
-app.use("/api/City" ,city)
+app.use("/api/City", city)
 app.use("/api/Emp", emp)
-app.get("/",(req,res)=>{
-  res.json("hello backend")
-})
-app.use(errorHandler)
+app.get("/", (req, res) => res.json("hello backend"))
 app.use(rateLimiter)
-await Mongodb(); 
+app.use(errorHandler)
 
-app.listen(PORT,()=>{
-  console.log(`server is successfully running on http://localhost:${PORT}`);
+Mongodb().then(() => {
+  app.listen(PORT, () => {
+    console.log(`server is successfully running on http://localhost:${PORT}`);
+  })
 })

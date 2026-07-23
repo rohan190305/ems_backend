@@ -64,7 +64,7 @@ city: {
 
 
 }, {
-    timeStamps :true
+    timestamps :true
 })
 
 const employee = mongoose.model("Employee", employeeSchema)
