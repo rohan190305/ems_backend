@@ -25,9 +25,8 @@ export const getState = async(req,res)=>{
             return res.status(400).json({message:"state not found"})
         }
         return res.status(200).json({message:"state found successfully", State})
-
-    } catch {
-        return res.status(500).json({message:"internal server error"})
-        
+    } catch(error) {
+        console.log(error)
+        return res.status(500).json({message: error.message})
     }
 }
